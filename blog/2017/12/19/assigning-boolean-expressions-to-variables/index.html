@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Assigning Boolean Expressions to Variables</title>
+		<link href="/css/solarized-dark.css" rel="stylesheet">
+		<link href="/css/main.css" rel="stylesheet">
+		<!--
+			TODO figure out if fontawesome script can be either:
+				placed at bottom of body or bundle the icons with site
+				and import them in the css
+		-->
+		<script src="https://use.fontawesome.com/b1cdb9069f.js"></script>
+	</head>
+	<body>
+		<div class="topbar">
+			<header class="hbox">
+				<h1>Derek Morey</h1>
+				<span id="menu-btn" class="menu-btn">
+					<div></div>
+					<div></div>
+					<div></div>
+				</span>
+			</header>
+			<nav id="topbar-nav" class="vbox">
+				<a href="/">Home</a>
+				<a href="/about/">About</a>
+				<a href="/archive/">Archive</a>
+				<a href="/contact/">Contact</a>
+				</nav>
+		</div>
+		<div class="left vbox">
+			<nav class="vbox">
+				<img height="150px" width="150px" src="/assets/me.jpg" alt="Me" />
+				<h1><a href="/">Derek Morey</a></h1>
+				<a class="navlink" href="/">Home</a>
+				<a class="navlink" href="/about/">About</a>
+				<a class="navlink" href="/archive/">Archive</a>
+				<a class="navlink" href="/contact/">Contact</a>
+				</nav>
+			<footer class="social vbox">
+				<a href="https://github.com/Oisota">Github</a>
+				<a href="https://linkedin.com/in/derek-o-morey">LinkedIn</a>
+				<a href="https://gab.ai/DerekMorey">Gab</a>
+				
+			</footer>
+		</div>
+
+		<main>
+			
+<div class="content">
+	
+<div class="blog-content">
+	<p>
+		<i class="fa fa-calendar" aria-hidden="true"></i>
+		<span class="blog-date">2017-12-19</span>
+		<i class="fa fa-comment" aria-hidden="true"></i>
+		<a class="comment-count" href="https://oisota.github.io/blog/2017/12/19/assigning-boolean-expressions-to-variables#disqus_thread">comments</a>
+	</p>
+	<h1 class="blog-title"><a href="/blog/2017/12/19/assigning-boolean-expressions-to-variables">Assigning Boolean Expressions to Variables</a></h1>
+	<hr>
+	<p>This is just a design pattern I wanted to share.
+It makes complicated <code>if/else</code> blocks more readable in my opinion.
+When writing a conditional you can sometimes end up with several expressions that are being tested.
+It can look something like this:</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">if</span> (foo &gt; <span class="hljs-number">100</span> &amp;&amp; foo &lt; <span class="hljs-number">200</span> &amp;&amp; bar === <span class="hljs-string">'some value'</span> &amp;&amp; boo === <span class="hljs-number">0</span>) {
+    <span class="hljs-comment">//do stuff</span>
+} <span class="hljs-keyword">else</span> {
+    <span class="hljs-comment">//do other stuff</span>
+}</code></pre>
+
+<p>The code can be made more readable by giving descriptive variable names to each expression being tested.
+For example:</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">const</span> fooIsValid = foo &gt; <span class="hljs-number">100</span> &amp;&amp; foo &lt; <span class="hljs-number">200</span>;
+<span class="hljs-keyword">const</span> barIsSomeValue = bar === <span class="hljs-string">'some value'</span>;
+<span class="hljs-keyword">const</span> booIsZero = boo === <span class="hljs-number">0</span>;
+
+<span class="hljs-keyword">if</span> (fooIsValid &amp;&amp; barIsSomeValue &amp;&amp; booIsZero) {
+    <span class="hljs-comment">//do stuff</span>
+} <span class="hljs-keyword">else</span> {
+    <span class="hljs-comment">//do other stuff</span>
+}</code></pre>
+
+<p>By doing so, the code becomes self documenting as to what each expression means.
+The expressions can then be reused in subsequent conditions like so:</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">const</span> fooIsValid = foo &gt; <span class="hljs-number">100</span> &amp;&amp; foo &lt; <span class="hljs-number">200</span>;
+<span class="hljs-keyword">const</span> barIsSomeValue = bar === <span class="hljs-string">'some value'</span>;
+<span class="hljs-keyword">const</span> booIsZero = boo === <span class="hljs-number">0</span>;
+
+<span class="hljs-keyword">if</span> (fooIsValid &amp;&amp; barIsSomeValue &amp;&amp; booIsZero) {
+    <span class="hljs-comment">//do stuff</span>
+} <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (fooIsValid || !barIsSomeValue){
+    <span class="hljs-comment">//do other stuff</span>
+} <span class="hljs-keyword">else</span> {
+    <span class="hljs-comment">//do other things</span>
+}</code></pre>
+
+<p>With all the conditions defined in one place, editing them becomes much less error prone.
+If they were inline, you might forget to update one of the reused conditions.
+Another benefit is that it is trivial to combine and modify the expressions with the boolean operators as shown above.</p>
+<p>I find this pattern to be most useful when the boolean expressions become complex enough to warrant needing a comment explaining them but not so complex that they need to be broken out into a separate function.</p>
+
+</div>
+
+	<div class="pager hbox">
+		<a class="previous disabled">previous</a>
+		<a class="next" href="/blog/2017/04/06/functional-vs-imperative-programming">next</a>
+		</div>
+	<div id="disqus_thread"></div>
+	<noscript>
+		Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+	</noscript>
+</div>
+
+		</main>
+
+		<script charset="utf-8">
+(() => {
+	let menuOpen = false;
+	document.getElementById('menu-btn').addEventListener('click', (event) => {
+		const topbar = document.getElementById('topbar-nav');
+		if (menuOpen) {
+			topbar.style.display = 'none';
+			menuOpen = false;
+		} else {
+			topbar.style.display = 'flex';
+			menuOpen = true;
+		}
+	});
+})();
+		</script>
+		
+<script>
+if (window.location.host.split(':')[0] !== 'localhost') { 
+	var disqus_config = function () {
+		this.page.url = 'https://oisota.github.io/blog/2017/12/19/assigning-boolean-expressions-to-variables';
+		this.page.identifier = 'https://oisota.github.io/blog/2017/12/19/assigning-boolean-expressions-to-variables';
+	};
+	(function() { // DON'T EDIT BELOW THIS LINE
+		var d = document, s = d.createElement('script');
+		s.src = '//derekmorey-1.disqus.com/embed.js';
+		s.setAttribute('data-timestamp', (new Date()).getTime());
+		(d.head || d.body).appendChild(s);
+	})();
+}
+</script>
+
+<script id="dsq-count-scr" src="//derekmorey-1.disqus.com/count.js" async=""></script>
+
+
+	</body>
+</html>

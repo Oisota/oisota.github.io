@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Functional vs Imperative Programming</title>
+		<link href="/css/solarized-dark.css" rel="stylesheet">
+		<link href="/css/main.css" rel="stylesheet">
+		<!--
+			TODO figure out if fontawesome script can be either:
+				placed at bottom of body or bundle the icons with site
+				and import them in the css
+		-->
+		<script src="https://use.fontawesome.com/b1cdb9069f.js"></script>
+	</head>
+	<body>
+		<div class="topbar">
+			<header class="hbox">
+				<h1>Derek Morey</h1>
+				<span id="menu-btn" class="menu-btn">
+					<div></div>
+					<div></div>
+					<div></div>
+				</span>
+			</header>
+			<nav id="topbar-nav" class="vbox">
+				<a href="/">Home</a>
+				<a href="/about/">About</a>
+				<a href="/archive/">Archive</a>
+				<a href="/contact/">Contact</a>
+				</nav>
+		</div>
+		<div class="left vbox">
+			<nav class="vbox">
+				<img height="150px" width="150px" src="/assets/me.jpg" alt="Me" />
+				<h1><a href="/">Derek Morey</a></h1>
+				<a class="navlink" href="/">Home</a>
+				<a class="navlink" href="/about/">About</a>
+				<a class="navlink" href="/archive/">Archive</a>
+				<a class="navlink" href="/contact/">Contact</a>
+				</nav>
+			<footer class="social vbox">
+				<a href="https://github.com/Oisota">Github</a>
+				<a href="https://linkedin.com/in/derek-o-morey">LinkedIn</a>
+				<a href="https://gab.ai/DerekMorey">Gab</a>
+				
+			</footer>
+		</div>
+
+		<main>
+			
+<div class="content">
+	
+<div class="blog-content">
+	<p>
+		<i class="fa fa-calendar" aria-hidden="true"></i>
+		<span class="blog-date">2017-04-06</span>
+		<i class="fa fa-comment" aria-hidden="true"></i>
+		<a class="comment-count" href="https://oisota.github.io/blog/2017/04/06/functional-vs-imperative-programming#disqus_thread">comments</a>
+	</p>
+	<h1 class="blog-title"><a href="/blog/2017/04/06/functional-vs-imperative-programming">Functional vs Imperative Programming</a></h1>
+	<hr>
+	<p>A while back I wrote a small JavaScript program that compared the difference between functional and imperative programming styles.
+I figured it might make an interesting blog post so here it is.</p>
+<p>I wanted to see how each approach would go about solving the same problem and how each solution compared in terms of readability and performance.
+The problem I chose to solve is somewhat contrived, but I think it illustrates some key differences in each approach.
+The problem being: remove all elements from an array that are less than 100, square every element, and then sum the array.</p>
+<p>In order to properly compare the different styles, I ended up splitting the code into four JavaScript files.
+One file contains an array generation function and the other three contain the solutions to the problem.</p>
+<p>Here is the script used to generate the array:</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">const</span> gen = <span class="hljs-built_in">require</span>(<span class="hljs-string">'random-seed'</span>);
+
+<span class="hljs-keyword">const</span> seed = <span class="hljs-string">'Go Go Power Rangers'</span>;
+<span class="hljs-keyword">const</span> rand = gen.create(seed);
+<span class="hljs-keyword">const</span> len = <span class="hljs-number">10000000</span>;
+<span class="hljs-keyword">const</span> n = <span class="hljs-number">10000</span>;
+
+<span class="hljs-built_in">module</span>.exports = <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.from(<span class="hljs-built_in">Array</span>(len)).map(<span class="hljs-function"><span class="hljs-params">_</span> =&gt;</span> rand(n));
+}</code></pre>
+
+<p>I used <a href="https://www.npmjs.com/package/random-seed">random-seed</a> as the random number generator.
+Using this module and seeding the generator with the same value ensures that each example operates on the exact same array.</p>
+<p>The first script is a naive imperative implementation.
+Its what you would write if you thought about doing each task sequentially without giving much thought to performance.
+It uses three <code>for</code> loops to accomplish each task and ends up being 13 lines of code not counting the array generation and the console statement.</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">const</span> gen_array = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./array_gen'</span>);
+<span class="hljs-keyword">const</span> x = gen_array();
+
+<span class="hljs-keyword">const</span> l1 = [];
+<span class="hljs-keyword">let</span> sum = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i=<span class="hljs-number">0</span>; i&lt;x.length; i++) {
+    <span class="hljs-keyword">if</span> (x[i] &lt; <span class="hljs-number">100</span>) {
+        l1.push(x[i]);
+    }
+}
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i=<span class="hljs-number">0</span>; i&lt;l1.length; i++) {
+    l1[i] = <span class="hljs-built_in">Math</span>.pow(l1[i], <span class="hljs-number">2</span>);
+}
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i=<span class="hljs-number">0</span>; i&lt;l1.length; i++) {
+    sum += l1[i];
+}
+
+<span class="hljs-built_in">console</span>.log(sum);</code></pre>
+
+<p>This approach loses out on some performance by iterating through the array three times.
+Although, by having separate loops, it is more clear what the code is actually doing as the steps to solve the problem are clearly illustrated by the code.</p>
+<p>The next script is a somewhat optimized version of the above example using only a single <code>for</code> loop.
+This reduces the line count to only 7 lines.</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">const</span> gen_array = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./array_gen'</span>);
+<span class="hljs-keyword">const</span> x = gen_array();
+
+<span class="hljs-keyword">let</span> sum = <span class="hljs-number">0</span>;
+<span class="hljs-keyword">for</span> (<span class="hljs-keyword">let</span> i=<span class="hljs-number">0</span>; i&lt;x.length; i++) {
+    <span class="hljs-keyword">if</span> (x[i] &lt; <span class="hljs-number">100</span>) {
+        sum += <span class="hljs-built_in">Math</span>.pow(x[i], <span class="hljs-number">2</span>)
+    }
+}
+
+<span class="hljs-built_in">console</span>.log(sum);</code></pre>
+
+<p>This example yields better performance but it comes at the cost of readability and maintainability as all the operations are jumbled together in the single loop.</p>
+<p>The final script solves the problem in a functional style and makes use of the array prototype functions <code>map</code>, <code>reduce</code>, and <code>filter</code>.
+It is the smallest and most readable at only 4 lines of code.
+This approach also suffers a performance loss due to iterating through the array 3 times like the first example.</p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">const</span> gen_array = <span class="hljs-built_in">require</span>(<span class="hljs-string">'./array_gen'</span>);
+<span class="hljs-keyword">const</span> x = gen_array();
+
+<span class="hljs-keyword">const</span> sum = x
+    .filter(<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> a &lt; <span class="hljs-number">100</span>)
+    .map(<span class="hljs-function"><span class="hljs-params">a</span> =&gt;</span> <span class="hljs-built_in">Math</span>.pow(a, <span class="hljs-number">2</span>))
+    .reduce(<span class="hljs-function">(<span class="hljs-params">(a, b</span>) =&gt;</span> a + b), <span class="hljs-number">0</span>);
+
+<span class="hljs-built_in">console</span>.log(sum);</code></pre>
+
+<h3 id="readability">Readability</h3>
+<p>In my opinion, the functional approach is many times more readable than the imperative approach.
+This is because the imperative examples have explicit iteration using <code>for</code> loops while the functional example has implicit iteration using higher order functions.
+The extraneous noise of the <code>for</code> loop syntax obscures the meaning of the code and makes it less readable.
+At first glance, it isn&#39;t immediately obvious what a <code>for</code> loop is doing. 
+The problem being solved isn&#39;t about setting up a counter variable and then indexing off of it.
+It is about filtering some data, then transforming it, and then reducing it to a single value.
+Contrast <code>for</code> loops with <code>map</code>, <code>filter</code>, and <code>reduce</code> where the meaning of the code is much clearer due to the semantic meaning associated with these functions.
+<code>map</code> transforms lists, <code>filter</code> filters elements out of a list based upon a condition, and <code>reduce</code> reduces lists to a single value.
+The semantic meaning behind these functions allow the code to express its intent much more clearly than with <code>for</code> loops.</p>
+<h3 id="performance">Performance</h3>
+<p>I used the <code>time</code> command to time the exeuction of each script.
+This gives a rough idea of the performance of each style.
+Each script uses the same array generated with the script from above.</p>
+<pre><code class="hljs no-highlight">&dollar; time node imperative&lowbar;naive&period;js&NewLine;328070766&NewLine;&NewLine;real0m2&period;823s&NewLine;user0m2&period;788s&NewLine;sys0m0&period;036s&NewLine;&NewLine;&dollar; time node imperative&lowbar;optimized&period;js&NewLine;328070766&NewLine;&NewLine;real0m2&period;744s&NewLine;user0m2&period;720s&NewLine;sys0m0&period;024s&NewLine;&NewLine;&dollar; time node functional&period;js&NewLine;328070766&NewLine;&NewLine;real0m3&period;370s&NewLine;user0m3&period;356s&NewLine;sys0m0&period;016s</code></pre>
+
+<p>As expected, the second imperative example was the most efficient while the other two examples were less so.
+It is interesting to note that even though the first imperative examle and the functional example both iterate over the array three times, the imperative example performs slightly better.
+I&#39;m not sure as to why this is.
+It could have something to do with the overhead of calling functions on every element in the functional example.
+Also keep in mind that the array used in the tests contained 10 million elements, and even then the speed differences are under a second.
+When operating on much smaller arrays these differences are likely to be negligible.</p>
+<h3 id="conclusion">Conclusion</h3>
+<p>Although each approach solves the problem, they differ in terms of both readability and performance.
+The imperative style yielded code that was less readable but more performant while the functional style yielded the oppisite, more readable, less performant.
+Taking into account the size of the array used, I would argue that in most situations, the functional style should be preferred over the imperative.
+The functional approach requires less lines of code and is more readable.
+It also is more maintainable due to the composability of the array methods.
+Methods can be easily chained together to further manipulate the array.
+Changing the behaviour of the imperative examples requires more consideration, especially for the second example.
+That being said, if you have to operate an exceptionally large piece of data and performance is a concern, an imperative style may be a better choice.</p>
+
+</div>
+
+	<div class="pager hbox">
+		<a class="previous" href="/blog/2017/12/19/assigning-boolean-expressions-to-variables">previous</a>
+		<a class="next" href="/blog/2017/03/06/cardboard-laptop-stand">next</a>
+		</div>
+	<div id="disqus_thread"></div>
+	<noscript>
+		Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+	</noscript>
+</div>
+
+		</main>
+
+		<script charset="utf-8">
+(() => {
+	let menuOpen = false;
+	document.getElementById('menu-btn').addEventListener('click', (event) => {
+		const topbar = document.getElementById('topbar-nav');
+		if (menuOpen) {
+			topbar.style.display = 'none';
+			menuOpen = false;
+		} else {
+			topbar.style.display = 'flex';
+			menuOpen = true;
+		}
+	});
+})();
+		</script>
+		
+<script>
+if (window.location.host.split(':')[0] !== 'localhost') { 
+	var disqus_config = function () {
+		this.page.url = 'https://oisota.github.io/blog/2017/04/06/functional-vs-imperative-programming';
+		this.page.identifier = 'https://oisota.github.io/blog/2017/04/06/functional-vs-imperative-programming';
+	};
+	(function() { // DON'T EDIT BELOW THIS LINE
+		var d = document, s = d.createElement('script');
+		s.src = '//derekmorey-1.disqus.com/embed.js';
+		s.setAttribute('data-timestamp', (new Date()).getTime());
+		(d.head || d.body).appendChild(s);
+	})();
+}
+</script>
+
+<script id="dsq-count-scr" src="//derekmorey-1.disqus.com/count.js" async=""></script>
+
+
+	</body>
+</html>

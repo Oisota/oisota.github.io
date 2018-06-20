@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>About</title>
+		<link href="/css/solarized-dark.css" rel="stylesheet">
+		<link href="/css/main.css" rel="stylesheet">
+		<!--
+			TODO figure out if fontawesome script can be either:
+				placed at bottom of body or bundle the icons with site
+				and import them in the css
+		-->
+		<script src="https://use.fontawesome.com/b1cdb9069f.js"></script>
+	</head>
+	<body>
+		<div class="topbar">
+			<header class="hbox">
+				<h1>Derek Morey</h1>
+				<span id="menu-btn" class="menu-btn">
+					<div></div>
+					<div></div>
+					<div></div>
+				</span>
+			</header>
+			<nav id="topbar-nav" class="vbox">
+				<a href="/">Home</a>
+				<a href="/about/">About</a>
+				<a href="/archive/">Archive</a>
+				<a href="/contact/">Contact</a>
+				</nav>
+		</div>
+		<div class="left vbox">
+			<nav class="vbox">
+				<img height="150px" width="150px" src="/assets/me.jpg" alt="Me" />
+				<h1><a href="/">Derek Morey</a></h1>
+				<a class="navlink" href="/">Home</a>
+				<a class="navlink" href="/about/">About</a>
+				<a class="navlink" href="/archive/">Archive</a>
+				<a class="navlink" href="/contact/">Contact</a>
+				</nav>
+			<footer class="social vbox">
+				<a href="https://github.com/Oisota">Github</a>
+				<a href="https://linkedin.com/in/derek-o-morey">LinkedIn</a>
+				<a href="https://gab.ai/DerekMorey">Gab</a>
+				
+			</footer>
+		</div>
+
+		<main>
+			
+<div class="content">
+	<h1 class="centered">About</h1>
+	<hr />
+	<p>I am graduate of Cleveland State University with a bachelor&#39;s degree in computer science.
+I love developing software and learning about new tools and technologies.
+I&#39;m interested in all things related to programming, especially free and open source software.
+Some of my other interests include music, sailing, gaming, and electronics.
+Currently, I&#39;m working at Grathwol Automation developing telematics software.</p>
+
+</div>
+
+		</main>
+
+		<script charset="utf-8">
+(() => {
+	let menuOpen = false;
+	document.getElementById('menu-btn').addEventListener('click', (event) => {
+		const topbar = document.getElementById('topbar-nav');
+		if (menuOpen) {
+			topbar.style.display = 'none';
+			menuOpen = false;
+		} else {
+			topbar.style.display = 'flex';
+			menuOpen = true;
+		}
+	});
+})();
+		</script>
+		
+		
+	</body>
+</html>

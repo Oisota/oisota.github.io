@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Linux Backup Script</title>
+		<link href="/css/solarized-dark.css" rel="stylesheet">
+		<link href="/css/main.css" rel="stylesheet">
+		<!--
+			TODO figure out if fontawesome script can be either:
+				placed at bottom of body or bundle the icons with site
+				and import them in the css
+		-->
+		<script src="https://use.fontawesome.com/b1cdb9069f.js"></script>
+	</head>
+	<body>
+		<div class="topbar">
+			<header class="hbox">
+				<h1>Derek Morey</h1>
+				<span id="menu-btn" class="menu-btn">
+					<div></div>
+					<div></div>
+					<div></div>
+				</span>
+			</header>
+			<nav id="topbar-nav" class="vbox">
+				<a href="/">Home</a>
+				<a href="/about/">About</a>
+				<a href="/archive/">Archive</a>
+				<a href="/contact/">Contact</a>
+				</nav>
+		</div>
+		<div class="left vbox">
+			<nav class="vbox">
+				<img height="150px" width="150px" src="/assets/me.jpg" alt="Me" />
+				<h1><a href="/">Derek Morey</a></h1>
+				<a class="navlink" href="/">Home</a>
+				<a class="navlink" href="/about/">About</a>
+				<a class="navlink" href="/archive/">Archive</a>
+				<a class="navlink" href="/contact/">Contact</a>
+				</nav>
+			<footer class="social vbox">
+				<a href="https://github.com/Oisota">Github</a>
+				<a href="https://linkedin.com/in/derek-o-morey">LinkedIn</a>
+				<a href="https://gab.ai/DerekMorey">Gab</a>
+				
+			</footer>
+		</div>
+
+		<main>
+			
+<div class="content">
+	
+<div class="blog-content">
+	<p>
+		<i class="fa fa-calendar" aria-hidden="true"></i>
+		<span class="blog-date">2017-01-27</span>
+		<i class="fa fa-comment" aria-hidden="true"></i>
+		<a class="comment-count" href="https://oisota.github.io/blog/2017/01/27/linux-backup-script#disqus_thread">comments</a>
+	</p>
+	<h1 class="blog-title"><a href="/blog/2017/01/27/linux-backup-script">Linux Backup Script</a></h1>
+	<hr>
+	<p>Here is the script I use to backup my home directory.
+Its a simple bash script that uses <code>tar</code> and <code>gzip</code> to archive and compress the files.
+I run it every few weeks and backup my data to another hard drive in my computer.</p>
+<pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash
+</span>
+backup_path=<span class="hljs-variable">$1</span>
+date_stamp=$(date +%F)
+
+dir=<span class="hljs-variable">$backup_path</span><span class="hljs-variable">$date_stamp</span><span class="hljs-string">"_backup"</span>
+file=<span class="hljs-variable">$date_stamp</span><span class="hljs-string">"_backup.tar.gz"</span>
+<span class="hljs-built_in">log</span>=<span class="hljs-variable">$date_stamp</span><span class="hljs-string">"_backup.log"</span>
+
+mkdir <span class="hljs-variable">$dir</span>
+<span class="hljs-built_in">cd</span> <span class="hljs-variable">$dir</span>
+
+tar --create \
+    --file=<span class="hljs-variable">$file</span> ~/ \
+    --preserve-permissions \
+    --absolute-names \
+    --verbose \
+    --gzip \
+    --exclude=/home/derek/Documents/Books \
+    --exclude=/home/derek/Downloads \
+    --exclude=/home/derek/Desktop \
+    --exclude=/home/derek/Videos \
+    --exclude=/home/derek/Music \
+    --exclude=/home/derek/Games \
+    --exclude=/home/derek/Steam \
+    --exclude=<span class="hljs-variable">$file</span> \
+    --exclude=/home/derek/.* &gt; <span class="hljs-variable">$log</span></code></pre>
+
+<p>The script takes a single command line argument, which is the path to where the backup will be created.
+At the specified path, the script creates a directory with two files inside.
+One file is the actual gzipped archive file and the other is a log file containing the output of the <code>tar</code> command.
+Lets go through the script to understand how it works.</p>
+<pre><code class="hljs bash"><span class="hljs-meta">#!/usr/bin/env bash
+</span>
+backup_path=<span class="hljs-variable">$1</span>
+date_stamp=$(date +%F)</code></pre>
+
+<p>The first line is the &#39;shebang&#39; line that tells shell where the the bash interpreter for our system is.
+Then we save the path where we want the backup to be stored to the variable <code>backup_path</code>.
+The special <code>$1</code> variable in bash gives the value of the first command line arg.
+We then create a date stamp of the form <code>YYYY-MM-DD</code> using the <code>date</code> command line utility.
+Details of the <code>date</code> command can be found by typeing <code>man date</code> into the terminal.</p>
+<p>Next we create some more variables using the date stamp we saved above.</p>
+<pre><code class="hljs bash">dir=<span class="hljs-variable">$backup_path</span><span class="hljs-variable">$date_stamp</span><span class="hljs-string">"_backup"</span>
+file=<span class="hljs-variable">$date_stamp</span><span class="hljs-string">"_backup.tar.gz"</span>
+<span class="hljs-built_in">log</span>=<span class="hljs-variable">$date_stamp</span><span class="hljs-string">"_backup.log"</span></code></pre>
+
+<p>We save the name of the directory where the backup will be saved,
+the name of the gzipped tar file that will contain the backup,
+and the name of the log file.</p>
+<p>We then create the directory with <code>mkdir</code> and then <code>cd</code> into it.</p>
+<pre><code class="hljs bash">mkdir <span class="hljs-variable">$dir</span>
+<span class="hljs-built_in">cd</span> <span class="hljs-variable">$dir</span></code></pre>
+
+<p>Lastly we have the actual <code>tar</code> command that does the actuall archiving and compressing.
+The flags hopefully are straightforward to follow and understand.</p>
+<pre><code class="hljs bash">tar --create \
+    --file=<span class="hljs-variable">$file</span> ~/ \
+    --preserve-permissions \
+    --absolute-names \
+    --verbose \
+    --gzip \
+    --exclude=/home/derek/Documents/Books \
+    --exclude=/home/derek/Downloads \
+    --exclude=/home/derek/Desktop \
+    --exclude=/home/derek/Videos \
+    --exclude=/home/derek/Music \
+    --exclude=/home/derek/Games \
+    --exclude=/home/derek/Steam \
+    --exclude=<span class="hljs-variable">$file</span> \
+    --exclude=/home/derek/.* &gt; <span class="hljs-variable">$log</span></code></pre>
+
+<p>The command creates a new archive using the file name specified by <code>$file</code>.
+It preserves file permissions and uses absolute names.
+It gives verbose output and compresses using gzip compression.
+The exclude flag ignores directories and does not archive them.
+You can add whichever directories you don&#39;t want to get backed up here.
+The verbose output of the command is then redirected to the log file.</p>
+<p>This script can then be run like so:</p>
+<pre><code class="hljs no-highlight">&dollar; &period;&sol;backup&period;sh &sol;path&sol;to&sol;storage&sol;</code></pre>
+
+<p>This will create the following directory structure:</p>
+<pre><code class="hljs no-highlight">&sol;path&sol;to&sol;storage&sol;2017-01-20&lowbar;backup&sol;&NewLine;&boxvr;&boxh;&boxh; 2017-01-20&lowbar;backup&period;log&NewLine;&boxur;&boxh;&boxh; 2017-01-20&lowbar;backup&period;tar&period;gz</code></pre>
+
+<p>The log file will contain the verbose output of the <code>tar</code> command which will be a list of everyfile that has been archived.
+This is useful in checking whether or not the command ran as expected or if there was an error.
+The other file is the compressed archive containing all the files that were backed up.</p>
+<p>Retrieving files from the backup can be done using the command <code>tar -xvzf &lt;backup-file&gt;</code>.</p>
+<p>What I generally do when I run this script is I open two terminal windows and in one I run the script and in another I run <code>tail -f &lt;logfile&gt;</code>.
+This way I can watch the log file in real time in order to see what the script is doing and make sure its backing up the files I want it to.</p>
+
+</div>
+
+	<div class="pager hbox">
+		<a class="previous" href="/blog/2017/03/06/cardboard-laptop-stand">previous</a>
+		<a class="next" href="/blog/2016/12/20/recursive-descent-parsers">next</a>
+		</div>
+	<div id="disqus_thread"></div>
+	<noscript>
+		Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a>
+	</noscript>
+</div>
+
+		</main>
+
+		<script charset="utf-8">
+(() => {
+	let menuOpen = false;
+	document.getElementById('menu-btn').addEventListener('click', (event) => {
+		const topbar = document.getElementById('topbar-nav');
+		if (menuOpen) {
+			topbar.style.display = 'none';
+			menuOpen = false;
+		} else {
+			topbar.style.display = 'flex';
+			menuOpen = true;
+		}
+	});
+})();
+		</script>
+		
+<script>
+if (window.location.host.split(':')[0] !== 'localhost') { 
+	var disqus_config = function () {
+		this.page.url = 'https://oisota.github.io/blog/2017/01/27/linux-backup-script';
+		this.page.identifier = 'https://oisota.github.io/blog/2017/01/27/linux-backup-script';
+	};
+	(function() { // DON'T EDIT BELOW THIS LINE
+		var d = document, s = d.createElement('script');
+		s.src = '//derekmorey-1.disqus.com/embed.js';
+		s.setAttribute('data-timestamp', (new Date()).getTime());
+		(d.head || d.body).appendChild(s);
+	})();
+}
+</script>
+
+<script id="dsq-count-scr" src="//derekmorey-1.disqus.com/count.js" async=""></script>
+
+
+	</body>
+</html>
